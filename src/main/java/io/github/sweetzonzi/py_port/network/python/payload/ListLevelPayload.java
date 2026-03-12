@@ -8,7 +8,7 @@ import io.github.sweetzonzi.py_port.network.python.infrastructure.PyHandleResult
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyPayload;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyPayloadType;
 
-public class ListLevelPayload implements PyPayload {
+public record ListLevelPayload() implements PyPayload {
     public static final Codec<ListLevelPayload> CODEC = Codec.unit(ListLevelPayload::new);
     public static final PyPayloadType<ListLevelPayload> TYPE = new PyPayloadType<>("list_level", CODEC);
 

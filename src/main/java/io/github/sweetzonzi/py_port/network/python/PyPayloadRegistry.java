@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import io.github.sweetzonzi.py_port.PyCraft;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.*;
+import io.github.sweetzonzi.py_port.network.python.payload.GetTimePayload;
 import io.github.sweetzonzi.py_port.network.python.payload.ListLevelPayload;
 
 import java.util.HashMap;
@@ -26,6 +27,7 @@ public class PyPayloadRegistry {
     public static void registerAll() {
         // 在此注册所有网络包
         register(ListLevelPayload.TYPE, ListLevelPayload::handle);
+        register(GetTimePayload.TYPE, GetTimePayload::handle);
         PyCraft.LOGGER.info("[PyPayload] Registered {} payload types", HANDLERS.size());
     }
 
