@@ -28,6 +28,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(PyCraft.MOD_ID)
@@ -35,7 +36,7 @@ public class PyCraft {
     // Define mod id in a common place for everything to reference
     public static final String MOD_ID = "py_port";
     // Directly reference a slf4j logger
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LoggerFactory.getLogger("PyCraft");
     // Create a Deferred Register to hold Blocks which will all be registered under the "py_port" namespace
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
     // Create a Deferred Register to hold Items which will all be registered under the "py_port" namespace
