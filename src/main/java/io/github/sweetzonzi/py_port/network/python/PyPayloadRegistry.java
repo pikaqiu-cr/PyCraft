@@ -6,10 +6,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import io.github.sweetzonzi.py_port.PyCraft;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.*;
-import io.github.sweetzonzi.py_port.network.python.payload.GetBlockPayload;
-import io.github.sweetzonzi.py_port.network.python.payload.GetTimePayload;
-import io.github.sweetzonzi.py_port.network.python.payload.ListLevelPayload;
-import io.github.sweetzonzi.py_port.network.python.payload.SetBlockPayload;
+import io.github.sweetzonzi.py_port.network.python.payload.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +28,12 @@ public class PyPayloadRegistry {
         register(ListLevelPayload.TYPE, ListLevelPayload::handle);
         register(GetTimePayload.TYPE, GetTimePayload::handle);
         register(SetBlockPayload.TYPE, SetBlockPayload::handle);
+        register(SetBlocksPayload.TYPE, SetBlocksPayload::handle);
         register(GetBlockPayload.TYPE, GetBlockPayload::handle);
+        register(GetEntityPosPayload.TYPE, GetEntityPosPayload::handle);
+        register(TeleportEntityPayload.TYPE, TeleportEntityPayload::handle);
+        register(GetPlayersPayload.TYPE, GetPlayersPayload::handle);
+        register(MoveEntityPayload.TYPE, MoveEntityPayload::handle);
         PyCraft.LOGGER.info("[PyPayload] Registered {} payload types", HANDLERS.size());
     }
 
