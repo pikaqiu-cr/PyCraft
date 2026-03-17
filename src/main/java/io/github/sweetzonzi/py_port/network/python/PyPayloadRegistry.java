@@ -34,6 +34,7 @@ public class PyPayloadRegistry {
         register(TeleportEntityPayload.TYPE, TeleportEntityPayload::handle);
         register(GetPlayersPayload.TYPE, GetPlayersPayload::handle);
         register(MoveEntityPayload.TYPE, MoveEntityPayload::handle);
+        register(SetCameraPayload.TYPE, SetCameraPayload::handle);
         PyCraft.LOGGER.info("[PyPayload] Registered {} payload types", HANDLERS.size());
     }
 
