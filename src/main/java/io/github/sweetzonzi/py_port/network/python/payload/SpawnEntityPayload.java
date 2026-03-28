@@ -52,9 +52,6 @@ public record SpawnEntityPayload(
 
         // 2. 获取实体类型
         EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(payload.entity_type());
-        if (type == null) {
-            return PyPayloadType.fail("Entity type " + payload.entity_type() + " not found");
-        }
 
         // 3. 必须在服务器主线程执行生成操作
         // 由于需要返回 UUID，我们可以在主线程外先准备好 UUID（或者直接返回成功）
