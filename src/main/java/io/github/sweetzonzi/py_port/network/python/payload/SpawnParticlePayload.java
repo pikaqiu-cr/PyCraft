@@ -29,8 +29,7 @@ public record SpawnParticlePayload(
                     Codec.INT.fieldOf("count").forGetter(SpawnParticlePayload::count)
             ).apply(instance, SpawnParticlePayload::new));
 
-    public static final PyPayloadType<SpawnParticlePayload> TYPE =
-            new PyPayloadType<>("spawn_particle", CODEC);
+    public static final PyPayloadType<SpawnParticlePayload> TYPE = new PyPayloadType<>("spawn_particle", CODEC);
 
     @Override
     public PyPayloadType<?> type() {return TYPE;}
@@ -42,9 +41,7 @@ public record SpawnParticlePayload(
         }
 
         ServerLevel level = server.overworld();
-
         ParticleOptions particle = ParticleTypes.FLAME;
-
         level.sendParticles(
                 particle,
                 payload.x(),
@@ -54,7 +51,6 @@ public record SpawnParticlePayload(
                 0, 0, 0,
                 0
         );
-
         return PyHandleResult.success(new JsonObject());
     }
 }

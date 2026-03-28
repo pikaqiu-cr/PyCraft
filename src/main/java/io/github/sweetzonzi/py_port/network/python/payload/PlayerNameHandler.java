@@ -15,7 +15,5 @@ public class PlayerNameHandler {
         player.setCustomName(Component.literal("NewName"));
         player.setCustomNameVisible(true);
 
-        // Tab 列表名字（1.21 正确方法）
-        // player.setPlayerListName(Component.literal("NewName"));
     }
 }

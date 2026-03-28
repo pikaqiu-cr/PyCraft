@@ -28,33 +28,22 @@ public record SetPerspectivePayload(
     }
 
     public static PyHandleResult handle(SetPerspectivePayload payload, PyContext context) {
-
-        // 仅客户端有效
         Minecraft mc = Minecraft.getInstance();
-        if (mc == null) {
-            return PyHandleResult.fail("Minecraft client not available");
-        }
-
+        if (mc == null) {return PyHandleResult.fail("Minecraft client not available");}
         mc.execute(() -> {
             CameraType cameraType;
-
             switch (payload.mode()) {
                 case 1 -> cameraType = CameraType.THIRD_PERSON_BACK;
                 case 2 -> cameraType = CameraType.THIRD_PERSON_FRONT;
                 default -> cameraType = CameraType.FIRST_PERSON;
             }
-
             mc.options.setCameraType(cameraType);
-
-            // 可选：强制刷新渲染（避免某些情况下延迟生效）
             if (mc.getCameraEntity() != null) {
                 mc.gameRenderer.checkEntityPostEffect(mc.getCameraEntity());
             }
         });
-
         JsonObject data = new JsonObject();
         data.addProperty("status", "success");
-
         return PyHandleResult.success(data);
     }
 }

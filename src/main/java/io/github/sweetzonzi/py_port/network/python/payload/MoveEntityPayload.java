@@ -59,23 +59,17 @@ public record MoveEntityPayload(
             Vec3 target = new Vec3(targetX, targetY, targetZ);
 
             // 忽略Y轴
-            Vec3 delta = new Vec3(
-                    target.x - current.x,
-                    0,
-                    target.z - current.z
-            );
+            Vec3 delta = new Vec3(target.x - current.x, 0, target.z - current.z);
 
             double distance = delta.length();
 
             if (distance < 0.05) {
                 player.setDeltaMovement(Vec3.ZERO);
             } else {
-
                 // 单位方向
                 Vec3 direction = delta.normalize();
-
                 // P控制：距离越近速度越小
-                double k = 0.5;  // 增益（可调）
+                double k = 0.5;  // 增益
                 double speed = Math.min(payload.speed(), distance * k);
                 Vec3 velocity = direction.scale(speed);
                 player.setDeltaMovement(velocity);
