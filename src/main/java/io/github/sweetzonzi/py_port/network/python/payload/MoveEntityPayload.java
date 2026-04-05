@@ -10,6 +10,7 @@ import io.github.sweetzonzi.py_port.network.python.infrastructure.PyPayloadType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.Vec3;
 
 public record MoveEntityPayload(
@@ -32,7 +33,9 @@ public record MoveEntityPayload(
     public static final PyPayloadType<MoveEntityPayload> TYPE = new PyPayloadType<>("move_entity", CODEC);
 
     @Override
-    public PyPayloadType<?> type() {return TYPE;}
+    public PyPayloadType<?> type() {
+        return TYPE;
+    }
 
     public static PyHandleResult handle(MoveEntityPayload payload, PyContext context) {
         var server = context.getServer();
@@ -43,7 +46,9 @@ public record MoveEntityPayload(
         // 在所有维度中查找实体
         for (ServerLevel level : server.getAllLevels()) {
             entity = level.getEntity(payload.entity_id());
-            if (entity != null) {break;}
+            if (entity != null) {
+                break;
+            }
         }
         if (entity == null) {
             return PyHandleResult.fail("Entity not found");
@@ -74,7 +79,12 @@ public record MoveEntityPayload(
                 player.setDeltaMovement(velocity);
                 player.hurtMarked = true;
             }
-        } else {
+        }
+//        else if (entity instanceof Mob mob) {
+//            // 带AI生物使用自带寻路
+//            mob.getMoveControl().setWantedPosition(targetX, targetY, targetZ, payload.speed());
+//        }
+        else {
             // 普通实体使用速度移动
             Vec3 current = entity.position();
             Vec3 target = new Vec3(

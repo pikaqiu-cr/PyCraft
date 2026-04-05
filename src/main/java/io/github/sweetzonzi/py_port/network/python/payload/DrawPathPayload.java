@@ -3,6 +3,8 @@ package io.github.sweetzonzi.py_port.network.python.payload;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.sweetzonzi.py_port.PyCraft;
+import io.github.sweetzonzi.py_port.network.DrawLinePayload;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyContext;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyHandleResult;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyPayload;

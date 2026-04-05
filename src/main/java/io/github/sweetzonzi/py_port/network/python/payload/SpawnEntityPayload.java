@@ -85,11 +85,7 @@ public record SpawnEntityPayload(
 
                     // 注册为 agent（即玩家自行控制）
                     if (payload.is_agent().orElse(false)) {
-                        mob.setNoAi(true);
-
                         mob.setDeltaMovement(0, 0, 0);
-                        mob.setNoGravity(false); // 保留物理
-
                         AgentManager.register(mob);
                     }
                 }

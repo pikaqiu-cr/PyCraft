@@ -4,6 +4,7 @@
   "package": "io.github.sweetzonzi.py_port.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "PathNavigationMixin"
   ],
   "client": [
   ],
