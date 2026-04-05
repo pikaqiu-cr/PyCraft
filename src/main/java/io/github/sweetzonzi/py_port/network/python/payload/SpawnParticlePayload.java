@@ -47,8 +47,8 @@ public record SpawnParticlePayload(
                 payload.y(),
                 payload.z(),
                 payload.count(),
-                0.5, 0.5, 0.5,
-                0.1
+                0.1, 0.1, 0.1,
+                0.05
         );
         return PyHandleResult.success(new JsonObject());
     }

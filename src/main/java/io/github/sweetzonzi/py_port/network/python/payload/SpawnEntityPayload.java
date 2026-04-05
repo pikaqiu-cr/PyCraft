@@ -1,4 +1,5 @@
 package io.github.sweetzonzi.py_port.network.python.payload;
+import io.github.sweetzonzi.py_port.agent.AgentManager;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public record SpawnEntityPayload(
@@ -24,7 +26,8 @@ public record SpawnEntityPayload(
         double x,
         double y,
         double z,
-        ResourceLocation entity_type
+        ResourceLocation entity_type,
+        Optional<Boolean> is_agent  // 是否禁用AI
 ) implements PyPayload {
 
     public static final Codec<SpawnEntityPayload> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -32,14 +35,15 @@ public record SpawnEntityPayload(
             Codec.DOUBLE.fieldOf("x").forGetter(SpawnEntityPayload::x),
             Codec.DOUBLE.fieldOf("y").forGetter(SpawnEntityPayload::y),
             Codec.DOUBLE.fieldOf("z").forGetter(SpawnEntityPayload::z),
-            ResourceLocation.CODEC.fieldOf("entity_type").forGetter(SpawnEntityPayload::entity_type)
+            ResourceLocation.CODEC.fieldOf("entity_type").forGetter(SpawnEntityPayload::entity_type),
+            Codec.BOOL.optionalFieldOf("is_agent").forGetter(SpawnEntityPayload::is_agent)
     ).apply(instance, SpawnEntityPayload::new));
 
     public static final PyPayloadType<SpawnEntityPayload> TYPE =
             new PyPayloadType<>("spawn_entity", CODEC);
 
     @Override
-    public PyPayloadType<?> type() {return TYPE;}
+    public PyPayloadType<?> type() { return TYPE; }
 
     public static PyHandleResult handle(SpawnEntityPayload payload, PyContext context) {
         var server = context.getServer();
@@ -47,37 +51,30 @@ public record SpawnEntityPayload(
             return PyHandleResult.fail("Server is not running");
         }
 
-        // 获取维度
         ServerLevel serverLevel = server.getLevel(ResourceKey.create(Registries.DIMENSION, payload.level()));
         if (serverLevel == null) {
-            return PyHandleResult.fail("Level " + payload.level() + " not found");
+            return PyHandleResult.fail("Level not found");
         }
 
-        // 获取实体类型
         EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(payload.entity_type());
         if (type == null) {
-            return PyHandleResult.fail("Invalid entity type: " + payload.entity_type());
+            return PyHandleResult.fail("Invalid entity type");
         }
 
         CompletableFuture<JsonObject> future = new CompletableFuture<>();
 
-        // 在主线程执行
         server.execute(() -> {
             try {
                 JsonObject result = new JsonObject();
 
                 Entity entity = type.create(serverLevel);
                 if (entity == null) {
-                    future.completeExceptionally(
-                            new RuntimeException("Failed to create entity")
-                    );
+                    future.completeExceptionally(new RuntimeException("Create failed"));
                     return;
                 }
 
-                // 设置位置
                 entity.moveTo(payload.x(), payload.y(), payload.z(), 0, 0);
 
-                // 初始化生物
                 if (entity instanceof Mob mob) {
                     mob.finalizeSpawn(
                             serverLevel,
@@ -85,12 +82,20 @@ public record SpawnEntityPayload(
                             MobSpawnType.COMMAND,
                             null
                     );
+
+                    // 注册为 agent（即玩家自行控制）
+                    if (payload.is_agent().orElse(false)) {
+                        mob.setNoAi(true);
+
+                        mob.setDeltaMovement(0, 0, 0);
+                        mob.setNoGravity(false); // 保留物理
+
+                        AgentManager.register(mob);
+                    }
                 }
 
-                // 添加到世界
                 serverLevel.addFreshEntity(entity);
 
-                // 返回信息
                 result.addProperty("id", entity.getId());
                 result.addProperty("type", payload.entity_type().toString());
 
@@ -102,10 +107,9 @@ public record SpawnEntityPayload(
         });
 
         try {
-            JsonObject result = future.get();
-            return PyHandleResult.success(result);
+            return PyHandleResult.success(future.get());
         } catch (Exception e) {
-            return PyHandleResult.fail("Spawn failed: " + e.getMessage());
+            return PyHandleResult.fail(e.getMessage());
         }
     }
 }
