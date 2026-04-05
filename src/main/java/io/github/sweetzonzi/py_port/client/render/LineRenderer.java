@@ -8,14 +8,17 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
+@EventBusSubscriber(modid = PyCraft.MOD_ID, value = Dist.CLIENT)
 public class LineRenderer {
 
     private static final List<Line> LINES = new ArrayList<>();
@@ -32,11 +35,6 @@ public class LineRenderer {
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 camPos = camera.getPosition();
 
-        // 日志
-        if (!LINES.isEmpty()) {
-            PyCraft.LOGGER.info("[LineRenderer] Rendering {} lines", LINES.size());
-        }
-
         PoseStack poseStack = event.getPoseStack();
 
         poseStack.pushPose();
@@ -51,20 +49,18 @@ public class LineRenderer {
         while (it.hasNext()) {
             Line l = it.next();
 
-            int r = (l.color >> 16) & 0xFF;
-            int g = (l.color >> 8) & 0xFF;
-            int b = l.color & 0xFF;
-
             buffer.addVertex(matrix, (float) l.from.x, (float) l.from.y, (float) l.from.z)
-                    .setColor(r, g, b, 255);
+                    .setNormal((float) (l.to.x-l.from.x), (float) (l.to.y-l.from.y), (float) (l.to.z-l.from.z))
+                    .setColor(Color.WHITE.getRGB());
 
             buffer.addVertex(matrix, (float) l.to.x, (float) l.to.y, (float) l.to.z)
-                    .setColor(r, g, b, 255);
+                    .setNormal((float) (l.to.x-l.from.x), (float) (l.to.y-l.from.y), (float) (l.to.z-l.from.z))
+                    .setColor(Color.WHITE.getRGB());
 
             if (--l.life <= 0) it.remove();
         }
 
-        bufferSource.endBatch(RenderType.lines());
+        bufferSource.endBatch(RenderType.gui());
 
         poseStack.popPose();
     }

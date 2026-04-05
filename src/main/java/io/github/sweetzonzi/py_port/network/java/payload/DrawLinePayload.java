@@ -1,4 +1,4 @@
-package io.github.sweetzonzi.py_port.network;
+package io.github.sweetzonzi.py_port.network.java.payload;
 
 import io.github.sweetzonzi.py_port.PyCraft;
 import io.github.sweetzonzi.py_port.client.render.LineRenderer;
@@ -46,18 +46,17 @@ public record DrawLinePayload(
     }
 
     // 客户端处理
-    public void handle(IPayloadContext context) {
+    public static void handle(DrawLinePayload payload, IPayloadContext context) {
+        //TODO: 分离Handler，避免服务端访问到ClientOnly的类
         context.enqueueWork(() -> {
             // 日志
             PyCraft.LOGGER.info("[DrawLine] Client received: ({},{},{}) -> ({},{},{}) color={} duration={}",
-                    x1, y1, z1, x2, y2, z2, color, duration);
-
-
+                    payload.x1, payload.y1, payload.z1, payload.x2, payload.y2, payload.z2, payload.color, payload.duration);
             LineRenderer.addLine(
-                    new Vec3(x1, y1, z1),
-                    new Vec3(x2, y2, z2),
-                    color,
-                    duration
+                    new Vec3(payload.x1, payload.y1, payload.z1),
+                    new Vec3(payload.x2, payload.y2, payload.z2),
+                    payload.color,
+                    payload.duration
             );
         });
     }
